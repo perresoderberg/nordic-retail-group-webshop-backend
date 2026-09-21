@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\nordicretailgroup.webshop.Application\nordicretailgroup.webshop.Application.csproj" />
+    <ProjectReference Include="..\nordicretailgroup.webshop.Domain\nordicretailgroup.webshop.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

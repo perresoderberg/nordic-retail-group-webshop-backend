@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="../nordicretailgroup.webshop.Application/nordicretailgroup.webshop.Application.csproj" />
+  <Project Path="../nordicretailgroup.webshop.Domain/nordicretailgroup.webshop.Domain.csproj" />
+  <Project Path="../nordicretailgroup.webshop.Infrastructure/nordicretailgroup.webshop.Infrastructure.csproj" />
+  <Project Path="nordicretailgroup.webshop.UI.csproj" />
+</Solution>
