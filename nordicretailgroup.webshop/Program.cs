@@ -1,7 +1,17 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using nordicretailgroup.webshop.Application;
 using nordicretailgroup.webshop.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority =
+            "https://ygpuhlqdoanzygbckgmv.supabase.co/auth/v1";
+
+        options.Audience = "authenticated";
+    });
 
 builder.Services.AddControllers();
 
@@ -19,6 +29,8 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 //if (app.Environment.IsDevelopment())
@@ -29,7 +41,12 @@ var app = builder.Build();
 
 //app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+
+
+
 
 app.MapControllers();
 
