@@ -4,13 +4,16 @@ using nordicretailgroup.webshop.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.Authority =
             "https://ygpuhlqdoanzygbckgmv.supabase.co/auth/v1";
 
         options.Audience = "authenticated";
+
+        options.TokenValidationParameters.RoleClaimType = "user_role";
     });
 
 builder.Services.AddControllers();
@@ -33,11 +36,11 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-//if (app.Environment.IsDevelopment())
-//{
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
-//}
+}
 
 //app.UseHttpsRedirection();
 
