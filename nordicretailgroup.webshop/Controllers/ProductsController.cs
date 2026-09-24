@@ -9,10 +9,20 @@ namespace nordicretailgroup.webshop.Controllers;
 [Route("api/[controller]")]
 public class ProductsController(IProductService productService) : ControllerBase
 {
-    
-    [Authorize]
+
     [HttpGet("who-am-i")]
     public IActionResult WhoAmI()
+    {
+        return Ok(new
+        {
+            userId = User.FindFirst("sub")?.Value,
+            email = User.FindFirst("email")?.Value
+        });
+    }
+
+    [Authorize(Roles = "admin")]
+    [HttpGet("who-am-i-admin")]
+    public IActionResult WhoAmIAdmin()
     {
         return Ok(new
         {
@@ -31,9 +41,7 @@ public class ProductsController(IProductService productService) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    [ProducesResponseType(
-        typeof(ProductResponse),
-        StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProductResponse),StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ProductResponse>> GetById(int id,CancellationToken cancellationToken)
     {
@@ -47,7 +55,7 @@ public class ProductsController(IProductService productService) : ControllerBase
         return Ok(product);
     }
 
-    [Authorize]
+    [Authorize(Roles = "admin")]
     [HttpPut("{id:int}")]
     [ProducesResponseType(typeof(ProductResponse),StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -63,7 +71,7 @@ public class ProductsController(IProductService productService) : ControllerBase
         return Ok(product);
     }
 
-    [Authorize]
+    [Authorize(Roles = "admin")]
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
