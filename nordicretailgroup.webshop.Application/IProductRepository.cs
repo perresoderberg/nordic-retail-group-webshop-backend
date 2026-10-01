@@ -8,7 +8,7 @@ namespace nordicretailgroup.webshop.Application;
 
 public interface IProductRepository
 {
-    Task<IReadOnlyList<Product>> GetAllAsync(
+    Task<PagedResult<Product>> GetAllAsync(
         GetProductsRequest request,
         CancellationToken cancellationToken = default);
 

@@ -11,9 +11,9 @@ namespace nordicretailgroup.webshop.Infrastructure;
 public sealed class ProductRepository(AppDbContext dbContext)
     : IProductRepository
 {
-    public async Task<IReadOnlyList<Product>> GetAllAsync(
-        GetProductsRequest request,
-        CancellationToken cancellationToken = default)
+    public async Task<PagedResult<Product>> GetAllAsync(
+    GetProductsRequest request,
+    CancellationToken cancellationToken = default)
     {
         var query = dbContext.Products
             .AsNoTracking()
@@ -23,10 +23,10 @@ public sealed class ProductRepository(AppDbContext dbContext)
         // Filtering
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
-            var search = request.Search.Trim().ToLowerInvariant();
+            var search = request.Search.Trim();
 
             query = query.Where(x =>
-                x.Title.ToLower().Contains(search));
+                x.Title.Contains(search));
         }
 
         if (request.CategoryId.HasValue)
@@ -46,6 +46,9 @@ public sealed class ProductRepository(AppDbContext dbContext)
             query = query.Where(x =>
                 x.Price <= request.MaxPrice.Value);
         }
+
+        // Get count before pagination
+        var totalCount = await query.CountAsync(cancellationToken);
 
         // Sorting
         query = request.SortBy?.ToLowerInvariant() switch
@@ -69,7 +72,19 @@ public sealed class ProductRepository(AppDbContext dbContext)
             _ => query.OrderBy(x => x.Id)
         };
 
-        return await query.ToListAsync(cancellationToken);
+        // Pagination
+        var skip = (request.Page - 1) * request.PageSize;
+
+        var products = await query
+            .Skip(skip)
+            .Take(request.PageSize)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<Product>
+        {
+            Items = products,
+            TotalCount = totalCount
+        };
     }
 
     public async Task<Product?> GetByIdAsync(

@@ -32,10 +32,10 @@ public class ProductsController(IProductService productService) : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<ProductResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<ProductResponse>>> GetAll([FromQuery] GetProductsRequest request,CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(PagedResponse<ProductResponse>),StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResponse<ProductResponse>>> GetAll([FromQuery] GetProductsRequest request,CancellationToken cancellationToken)
     {
-        var products = await productService.GetAllAsync(request,cancellationToken);
+        var products = await productService.GetAllAsync(request, cancellationToken);
 
         return Ok(products);
     }

@@ -12,6 +12,8 @@ public sealed class GetProductsRequest
     public decimal? MaxPrice { get; init; }
 
     public string? SortBy { get; init; }
-
     public bool Ascending { get; init; } = true;
+
+    public int Page { get; init; } = 1;
+    public int PageSize { get; init; } = 20;
 }

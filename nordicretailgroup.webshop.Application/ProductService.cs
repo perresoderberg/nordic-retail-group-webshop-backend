@@ -7,54 +7,51 @@ public sealed class ProductService(
     IProductRepository productRepository)
     : IProductService
 {
-    public async Task<IReadOnlyList<ProductResponse>> GetAllAsync(
-        GetProductsRequest request,
-        CancellationToken cancellationToken = default)
+    public async Task<PagedResponse<ProductResponse>> GetAllAsync(GetProductsRequest request,CancellationToken cancellationToken = default)
     {
-        var products = await productRepository.GetAllAsync(
-            request,
-            cancellationToken);
+        if (request.Page < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(request.Page),"Page must be greater than 0.");
+        }
 
-        return products
-            .Select(MapToResponse)
-            .ToList();
+        if (request.PageSize is < 1 or > 100)
+        {
+            throw new ArgumentOutOfRangeException(nameof(request.PageSize),"PageSize must be between 1 and 100.");
+        }
+
+        var products = await productRepository.GetAllAsync(request,cancellationToken);
+
+        var items = products.Items.Select(MapToResponse).ToList();
+
+        var totalPages = (int)Math.Ceiling(products.TotalCount / (double)request.PageSize);
+
+        return new PagedResponse<ProductResponse>
+        {
+            Items = items,
+            Page = request.Page,
+            PageSize = request.PageSize,
+            TotalCount = products.TotalCount,
+            TotalPages = totalPages
+        };
     }
 
-    public async Task<ProductResponse?> GetByIdAsync(
-        int id,
-        CancellationToken cancellationToken = default)
+    public async Task<ProductResponse?> GetByIdAsync(int id,CancellationToken cancellationToken = default)
     {
-        var product = await productRepository.GetByIdAsync(
-            id,
-            cancellationToken);
+        var product = await productRepository.GetByIdAsync(id,cancellationToken);
 
-        return product is null
-            ? null
-            : MapToResponse(product);
+        return product is null ? null : MapToResponse(product);
     }
 
-    public Task<bool> DeleteAsync(
-        int id,
-        CancellationToken cancellationToken = default)
+    public Task<bool> DeleteAsync(int id,CancellationToken cancellationToken = default)
     {
-        return productRepository.DeleteAsync(
-            id,
-            cancellationToken);
+        return productRepository.DeleteAsync(id, cancellationToken);
     }
 
-    public async Task<ProductResponse?> UpdateAsync(
-        int id,
-        UpdateProductRequest request,
-        CancellationToken cancellationToken = default)
+    public async Task<ProductResponse?> UpdateAsync(int id, UpdateProductRequest request, CancellationToken cancellationToken = default)
     {
-        var product = await productRepository.UpdateAsync(
-            id,
-            request,
-            cancellationToken);
+        var product = await productRepository.UpdateAsync(id,request,cancellationToken);
 
-        return product is null
-            ? null
-            : MapToResponse(product);
+        return product is null ? null : MapToResponse(product);
     }
 
     private static ProductResponse MapToResponse(Product product)
@@ -79,9 +76,7 @@ public sealed class ProductService(
             Thumbnail = product.Thumbnail,
             CategoryId = product.CategoryId,
 
-            Category = product.Category is null
-                ? null
-                : new CategoryResponse
+            Category = product.Category is null ? null : new CategoryResponse
                 {
                     Id = product.Category.Id,
                     Name = product.Category.Name,
