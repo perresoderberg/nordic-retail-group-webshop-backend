@@ -11,9 +11,7 @@ namespace nordicretailgroup.webshop.Infrastructure;
 public sealed class ProductRepository(AppDbContext dbContext)
     : IProductRepository
 {
-    public async Task<PagedResult<Product>> GetAllAsync(
-    GetProductsRequest request,
-    CancellationToken cancellationToken = default)
+    public async Task<PagedResult<Product>> GetAllAsync(GetProductsRequest request,CancellationToken cancellationToken = default)
     {
         var query = dbContext.Products
             .AsNoTracking()
@@ -26,9 +24,8 @@ public sealed class ProductRepository(AppDbContext dbContext)
             var search = request.Search.Trim();
 
             query = query.Where(x =>
-                x.Title.Contains(search));
+                EF.Functions.ILike(x.Title, $"%{search}%"));
         }
-
         if (request.CategoryId.HasValue)
         {
             query = query.Where(x =>
