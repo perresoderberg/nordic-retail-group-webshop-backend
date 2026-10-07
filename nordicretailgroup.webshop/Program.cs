@@ -28,7 +28,7 @@ builder.Services.AddCors(options =>
             .WithOrigins(
                 "http://localhost:5173",
                 "http://localhost:4173",
-                "https://my-hosted-frontend.onrender.com" // just an example !!!!!
+                "https://nordic-retail-group-webshop.onrender.com"
             )
             .AllowAnyHeader()
             .AllowAnyMethod();
